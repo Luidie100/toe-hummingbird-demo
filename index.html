@@ -214,10 +214,14 @@ const LOGS = [
 
 const logBox=document.getElementById("log");
 function appendLine(line){
-  logBox.textContent+=(logBox.textContent?"\n":"")+line;
-  const lines=logBox.textContent.split("\n");
-  if(lines.length>120) logBox.textContent=lines.slice(-120).join("\n");
-  logBox.scrollTop=logBox.scrollHeight;
+  logBox.textContent += (logBox.textContent ? "\n" : "") + line;
+  const lines = logBox.textContent.split("\n");
+  if (lines.length > 120) logBox.textContent = lines.slice(-120).join("\n");
+  logBox.scrollTop = logBox.scrollHeight;
+  // Fix: Repaint-Trigger für Desktop
+  logBox.style.display = 'none';
+  logBox.offsetHeight; // force reflow
+  logBox.style.display = '';
 }
 
 /* ----------- Elemente -------------- */
@@ -279,6 +283,7 @@ requestAnimationFrame(animate);
 </footer>
 </body>
 </html>
+
 
 
 
