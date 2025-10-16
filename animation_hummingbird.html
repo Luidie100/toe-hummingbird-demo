@@ -1,0 +1,254 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Theory Of Everything vs Kolibri – Synchron ~200µs</title>
+<style>
+:root{
+  --bg:#0a0a0a;
+  --fg:#fff;
+  --muted:#aaa;
+  --glow:0 0 0.6rem rgba(255,255,255,.3);
+}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--fg);
+  font-family:ui-monospace,Menlo,Consolas,monospace;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  height:100vh;
+  overflow:hidden;
+}
+.title{
+  margin-bottom:12px;
+  letter-spacing:.4px;
+  text-shadow:var(--glow);
+  font-size:1.1rem;
+}
+.main{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  width:90%;
+}
+.codebox{
+  background:#0f0f0f;
+  border:1px solid #1a1a1a;
+  border-radius:10px;
+  padding:10px 14px;
+  width:55%;
+  height:260px;
+  overflow:hidden;
+  font-size:12.5px;
+  line-height:1.3;
+  box-shadow:inset 0 0 .6rem rgba(255,255,255,.05);
+  white-space:pre;
+  mask-image:linear-gradient(to bottom,rgba(0,0,0,1),rgba(0,0,0,0.7) 80%,rgba(0,0,0,0));
+}
+.visual{
+  position:relative;
+  width:45%;
+  height:260px;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+}
+.cable{
+  position:relative;
+  width:100%;
+  height:6px;
+  border-radius:4px;
+  background:linear-gradient(90deg,#0d0d0d,#1a1a1a,#0d0d0d);
+  box-shadow:inset 0 0 1rem rgba(255,255,255,.08),0 0 1rem rgba(255,255,255,.1);
+  margin-top:18px;
+}
+.packet{
+  position:absolute;
+  top:50%;
+  left:0%;
+  width:10px;
+  height:10px;
+  border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 10px rgba(255,255,255,.9);
+  transform:translate(-50%,-50%);
+}
+.hummingbird {
+  width: 180px;
+  height: 180px;
+  filter: drop-shadow(0 0 6px rgba(0,255,255,.5))
+          drop-shadow(0 0 12px rgba(255,255,255,.25));
+}
+.hummingbird svg {
+  width: 100%;
+  height: 100%;
+  transform-origin: center;
+}
+.hummingbird svg:hover {
+  filter: drop-shadow(0 0 8px rgba(0,255,255,.9))
+          drop-shadow(0 0 14px rgba(255,255,255,.5));
+}
+.controls{
+  position:absolute;
+  bottom:20px;
+  color:var(--muted);
+  display:flex;
+  align-items:center;
+  gap:10px;
+}
+.controls input[type=range]{width:240px;}
+.badge{
+  border:1px solid #222;
+  border-radius:999px;
+  padding:4px 8px;
+  font-size:12px;
+}
+</style>
+</head>
+<body>
+
+<div class="title">Theory Of Everything (~200 µs) vs Kolibri (~80 Hz)</div>
+
+<div class="main">
+  <div class="codebox" id="log"></div>
+
+  <div class="visual">
+    <div class="hummingbird">
+      <svg viewBox="0 0 200 200">
+        <defs>
+          <!-- Farbverläufe -->
+          <linearGradient id="bodyGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#5ef2ff"/>
+            <stop offset="100%" stop-color="#007a7a"/>
+          </linearGradient>
+          <linearGradient id="wingGrad" x1="0" y1="0" x2="1" y2="1">
+            <stop offset="0%" stop-color="#e0ffff" stop-opacity="0.9"/>
+            <stop offset="100%" stop-color="#3ad1d1" stop-opacity="0.4"/>
+          </linearGradient>
+          <linearGradient id="tailGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#008080"/>
+            <stop offset="100%" stop-color="#002f2f"/>
+          </linearGradient>
+        </defs>
+
+        <!-- Schwanz -->
+        <path d="M110,130 Q100,150 90,130 Z" fill="url(#tailGrad)" opacity="0.8"/>
+
+        <!-- Körper -->
+        <ellipse cx="100" cy="110" rx="14" ry="24" fill="url(#bodyGrad)"/>
+
+        <!-- Kopf -->
+        <circle cx="82" cy="90" r="8" fill="url(#bodyGrad)"/>
+
+        <!-- Auge -->
+        <circle cx="80" cy="88" r="1.4" fill="black"/>
+
+        <!-- Schnabel -->
+        <path d="M74,90 Q40,87 20,88" stroke="white" stroke-width="1.2" fill="none"/>
+
+        <!-- Flügel hinten (leicht transparent) -->
+        <path id="wingR"
+              d="M100,95 Q140,50 160,30 Q120,60 100,85 Z"
+              fill="url(#wingGrad)" opacity="0.25"/>
+
+        <!-- Flügel vorne -->
+        <path id="wingL"
+              d="M100,95 Q60,50 40,30 Q80,60 100,85 Z"
+              fill="url(#wingGrad)" />
+      </svg>
+    </div>
+    <div class="cable" id="cable">
+      <div class="packet" id="packet"></div>
+    </div>
+  </div>
+</div>
+
+<div class="controls">
+  <span>Tempo:</span>
+  <input id="speed" type="range" min="0.1" max="10" step="0.1" value="1">
+  <span class="badge"><span id="spd">1.0×</span> – Verhältnis konstant</span>
+</div>
+
+<script>
+/* ----------- HFT-Logs -------------- */
+const LOGS=[
+`2025-09-05 09:40:00.822981 [CME/ESU5 & CME/MESU5] ENTRY_SHORT | hedgeOpen=false | tick=0.25`,
+`2025-09-05 09:40:00.824 [Order] LMT IOC sent CME/ESU5 side=S qty=1 px=6474.25`,
+`2025-09-05 09:40:00.824 [Order] LMT IOC sent CME/MESU5 side=B qty=10 px=6473.25`,
+`2025-09-05 09:40:00.829870 [CME/ESU5 & CME/MESU5] ENTRY_SHORT`,
+`2025-09-05 09:40:00.830 [Order] LMT IOC sent CME/ESU5 side=S`,
+`2025-09-05 09:40:00.830 [Order] LMT IOC sent CME/MESU5 side=B`,
+`2025-09-05 09:40:00.839039 [CME/ESU5 & CME/MESU5] ENTRY_SHORT`,
+`2025-09-05 09:40:00.839 [Order] LMT IOC sent CME/ESU5 side=S`,
+`2025-09-05 09:40:00.839 [Order] LMT IOC sent CME/MESU5 side=B`
+];
+const logBox=document.getElementById("log");
+function appendLine(line){
+  logBox.textContent+=(logBox.textContent?"\n":"")+line;
+  const lines=logBox.textContent.split("\n");
+  if(lines.length>120) logBox.textContent=lines.slice(-120).join("\n");
+  logBox.scrollTop=logBox.scrollHeight;
+}
+
+/* ----------- Elemente -------------- */
+const packet=document.getElementById("packet");
+const cable=document.getElementById("cable");
+const wingL=document.getElementById("wingL");
+const wingR=document.getElementById("wingR");
+const speedSlider=document.getElementById("speed");
+const spdLabel=document.getElementById("spd");
+
+/* ----------- Verhältnis (skaliert) --------------
+   Kolibri = 80 Hz (12.5 ms)
+   HFT = 200 µs (0.2 ms)
+   Verhältnis = 62.5 : 1
+   Skalierung ×1000 → Kolibri=12.5 s, HFT=0.2 s
+----------------------------------- */
+const birdPeriod=12.5*1000; // 12.5 s pro Flügelschlag
+const hftPeriod=birdPeriod/62.5; // 0.2 s pro Event
+let speed=1;
+speedSlider.addEventListener("input",()=>{
+  speed=parseFloat(speedSlider.value);
+  spdLabel.textContent=speed.toFixed(1)+"×";
+});
+
+/* ----------- Animationen ------------ */
+let lastBird=performance.now(),wingAngle=0,dir=1;
+let lastHft=performance.now(),hftIdx=0;
+let progress=0;
+
+function animate(now){
+  // Sinusförmige Flügelbewegung
+  const angle = Math.sin(now / (birdPeriod / Math.PI) * speed) * 35;
+
+  // Flügel schlagen um realistischen Drehpunkt nahe der Körpermitte
+  wingL.setAttribute("transform", `rotate(${angle},100,95)`);
+  wingR.setAttribute("transform", `rotate(${-angle},100,95)`);
+
+  // HFT-Zyklus wie gehabt
+  const hftInt = hftPeriod / speed;
+  const width = cable.clientWidth;
+  const cycleTime = (now - lastHft) / hftInt;
+
+  if (cycleTime >= 1) {
+    appendLine(LOGS[hftIdx % LOGS.length]);
+    hftIdx++;
+    lastHft = now;
+    progress = 0;
+  } else {
+    progress = cycleTime;
+  }
+
+  packet.style.left = (progress * width) + "px";
+  requestAnimationFrame(animate);
+}
+requestAnimationFrame(animate);
+</script>
+</body>
+</html>
