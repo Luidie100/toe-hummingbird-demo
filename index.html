@@ -109,6 +109,26 @@ body{
   padding:4px 8px;
   font-size:12px;
 }
+@media (max-width: 768px) {
+  .main {
+    flex-direction: column;
+    gap: 10px;
+    width: 100%;
+  }
+  .codebox, .visual {
+    width: 92%;
+    height: 200px;
+  }
+  .hummingbird {
+    width: 120px;
+    height: 120px;
+  }
+  .controls {
+    flex-direction: column;
+    bottom: 10px;
+    font-size: 13px;
+  }
+}
 </style>
 </head>
 <body>
@@ -255,4 +275,5 @@ requestAnimationFrame(animate);
 </footer>
 </body>
 </html>
+
 
