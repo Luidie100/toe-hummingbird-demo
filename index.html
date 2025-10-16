@@ -197,17 +197,21 @@ body{
 
 <script>
 /* ----------- HFT-Logs -------------- */
-const LOGS=[
-`2025-09-05 09:40:00.822981 [CME/ESU5 & CME/MESU5] ENTRY_SHORT | hedgeOpen=false | tick=0.25`,
-`2025-09-05 09:40:00.824 [Order] LMT IOC sent CME/ESU5 side=S qty=1 px=6474.25`,
-`2025-09-05 09:40:00.824 [Order] LMT IOC sent CME/MESU5 side=B qty=10 px=6473.25`,
-`2025-09-05 09:40:00.829870 [CME/ESU5 & CME/MESU5] ENTRY_SHORT`,
-`2025-09-05 09:40:00.830 [Order] LMT IOC sent CME/ESU5 side=S`,
-`2025-09-05 09:40:00.830 [Order] LMT IOC sent CME/MESU5 side=B`,
-`2025-09-05 09:40:00.839039 [CME/ESU5 & CME/MESU5] ENTRY_SHORT`,
-`2025-09-05 09:40:00.839 [Order] LMT IOC sent CME/ESU5 side=S`,
-`2025-09-05 09:40:00.839 [Order] LMT IOC sent CME/MESU5 side=B`
+const LOGS = [
+`2025-09-05 09:40:00.822000 [SIGNAL] ENTRY_SHORT`,
+`2025-09-05 09:40:00.822200 [ORDER] Order sent EXC/INST1`,
+`2025-09-05 09:40:00.822400 [ORDER] Order sent EXC/INST2`,
+`2025-09-05 09:40:00.822600 [SIGNAL] EXIT_SHORT`,
+`2025-09-05 09:40:00.822800 [ORDER] Order sent EXC/INST1`,
+`2025-09-05 09:40:00.823000 [ORDER] Order sent EXC/INST2`,
+`2025-09-05 09:40:00.823200 [SIGNAL] ENTRY_LONG`,
+`2025-09-05 09:40:00.823400 [ORDER] Order sent EXC/INST1`,
+`2025-09-05 09:40:00.823600 [ORDER] Order sent EXC/INST2`,
+`2025-09-05 09:40:00.823800 [SIGNAL] EXIT_LONG`,
+`2025-09-05 09:40:00.824000 [ORDER] Order sent EXC/INST1`,
+`2025-09-05 09:40:00.824200 [ORDER] Order sent EXC/INST2`
 ];
+
 const logBox=document.getElementById("log");
 function appendLine(line){
   logBox.textContent+=(logBox.textContent?"\n":"")+line;
@@ -275,5 +279,6 @@ requestAnimationFrame(animate);
 </footer>
 </body>
 </html>
+
 
 
